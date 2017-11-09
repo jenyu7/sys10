@@ -1,29 +1,44 @@
+/********
+ * Jen Yu
+ * Period 10 Systems
+ * HW #10: Fire up the batSIGNAL
+ * 2017-11-08
+ ********/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 
-
+//Function to handle signals
 static void sighandler(int signo)
 {
-  if (signo == SIGUSR1)
-    {
-      printf("Parent Process: %d\n", getpid());
-    }
-  else
-    {
-      printf("Exited due to process %d\n", getpid());
-      exit(1);
-    }
+  //Don't end the process if signal is SIGUSR1
+	if (signo == SIGUSR1)
+	{
+		//print out the id of the parent process, but do not exit. 
+		printf("Parent Process: %d\n", getpid());
+	}
+	//End the process if signal is SIGINT
+	else if (signo == SIGINT)
+	{
+		//print out id of process exited, and reason being SIGINT
+		printf("Exited process %d due to SIGINT\n", getpid());
+		exit(1);
+	}
 }
+
+//Question: Why does kill -30 <PID> result in the 'Power Failure' error?
 
 int main()
 {
-  signal(SIGINT, sighandler);
-  signal(SIGUSR1, sighandler);
-  while(1)
+	//Needs to account for two signals: SIGINT and SIGUSR1
+	signal(SIGINT, sighandler);
+	signal(SIGUSR1, sighandler);
+	//Forever loop
+	while(1)
     {
-      printf("Forever loop, Process %d\n", getpid());
-      sleep(1);
+		printf("Forever loop: Process %d\n", getpid());
+		sleep(1);
     }
-  return 0;
+	return 0;
 }
