@@ -8,6 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 //Function to handle signals
 static void sighandler(int signo)
@@ -21,9 +24,13 @@ static void sighandler(int signo)
 	//End the process if signal is SIGINT
 	else if (signo == SIGINT)
 	{
-		//print out id of process exited, and reason being SIGINT
-		printf("Exited process %d due to SIGINT\n", getpid());
-		exit(1);
+	  int fd = open("errlog", O_CREAT | O_WRONLY | O_APPEND, 0644 );
+	  char msg[256] = "Exited process due to SIGINT error\n";
+	  write(fd, msg, sizeof(msg));
+	  close(fd);
+	  //print out id of process exited, and reason being SIGINT
+	  printf("Exited process %d due to SIGINT\n", getpid());
+	  exit(1);
 	}
 }
 
